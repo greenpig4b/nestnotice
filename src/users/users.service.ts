@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/users.entity';
 import { Repository } from 'typeorm';
+import { UserDTO } from 'src/auth/dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -10,6 +11,21 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+
+  // 더미 유저 생성
+  async createUser(
+    email: string,
+    password: string,
+    name: string,
+  ): Promise<User> {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = this.usersRepository.create({
+      email,
+      password: hashedPassword,
+      name,
+    });
+    return this.usersRepository.save(user);
+  }
 
   //모든 유저
   findAll(): Promise<User[]> {
@@ -22,14 +38,14 @@ export class UsersService {
   }
 
   // 이메일 중복체크
-  async findOneUserByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
   // 회원가입
-  async create(user: User): Promise<void> {
+  async create(user: User): Promise<UserDTO> {
     // 이메일 중복 체크
-    const existingUser = await this.findOneUserByEmail(user.email);
+    const existingUser = await this.findOneByEmail(user.email);
     if (existingUser) {
       throw new Error('이미 사용중인 이메일입니다.');
     }
@@ -38,7 +54,9 @@ export class UsersService {
     user.password = await bcrypt.hash(user.password, 10);
 
     // 유저 저장
-    await this.usersRepository.save(user);
+    const saveedUser = await this.usersRepository.save(user);
+
+    return saveedUser;
   }
 
   // 탈퇴하기

@@ -6,7 +6,7 @@ import { User } from './entity/users.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  exports: [TypeOrmModule],
+  exports: [UsersService, TypeOrmModule], // UsersService를 내보내기 추가
   providers: [UsersService],
   controllers: [UsersController],
 })
