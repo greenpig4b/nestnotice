@@ -14,7 +14,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entity/users.entity';
 import { UsersService } from './users/users.service';
 import { UserAuthority } from './users/entity/user-authority.entity';
-import { NoticeModule } from './notice/notice.module';
 import { BoardModule } from './board/board.module';
 
 @Module({
@@ -26,9 +25,9 @@ import { BoardModule } from './board/board.module';
       synchronize: true, // 개발모드에서만 설정
       logging: true,
     }),
+    TypeOrmModule.forFeature([User, UserAuthority]), // UserAuthority 리포지토리 추가
     AuthModule,
     UsersModule,
-    NoticeModule,
     BoardModule,
   ],
   controllers: [AppController],
@@ -51,7 +50,6 @@ export class AppModule implements NestModule, OnModuleInit {
       { email: 'cos@nate.com', password: '1234', name: '김지훈' },
       { email: 'love@nate.com', password: '1234', name: '장유진' },
     ];
-    const dummyNotice = [];
     //
     for (const user of dummyUsers) {
       await this.usersService.createUser(user.email, user.password, user.name);
