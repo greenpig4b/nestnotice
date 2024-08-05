@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/users.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { UserDTO } from 'src/auth/dto/user.dto';
 
 @Injectable()
@@ -43,18 +43,18 @@ export class UsersService {
   }
 
   // 회원가입
-  async create(user: User): Promise<UserDTO> {
+  async create(userDTO: UserDTO): Promise<UserDTO> {
     // 이메일 중복 체크
-    const existingUser = await this.findOneByEmail(user.email);
+    const existingUser = await this.findOneByEmail(userDTO.email);
     if (existingUser) {
       throw new Error('이미 사용중인 이메일입니다.');
     }
 
     // 비밀번호 해싱
-    user.password = await bcrypt.hash(user.password, 10);
+    userDTO.password = await bcrypt.hash(userDTO.password, 10);
 
     // 유저 저장
-    const saveedUser = await this.usersRepository.save(user);
+    const saveedUser = await this.usersRepository.save(userDTO);
 
     return saveedUser;
   }
@@ -64,29 +64,10 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
-  //유저 생성
-  //   async create(email: string, password: string, name: string): Promise<User> {
-  //     const hashedPassword = await bcrypt.hash(password, 10);
-  //     const newUser: User = {
-  //       id: this.users.length + 1,
-  //       email,
-  //       password: hashedPassword,
-  //       name,
-  //     };
-
-  //     this.users.push(newUser);
-  //     return newUser;
-  //   }
-
-  // 유저 탈퇴
-  //   async delete(email: string): Promise<boolean> {
-  //     const index = this.users.findIndex((user) => user.email === email);
-
-  //     if (index !== 1) {
-  //       this.users.splice(index, 1);
-  //       return true;
-  //     }
-
-  //     return false;
-  //  }
+  // 유저검색
+  async findByFields(
+    options: FindOneOptions<UserDTO>,
+  ): Promise<UserDTO | undefined> {
+    return await this.usersRepository.findOne(options);
+  }
 }

@@ -32,7 +32,7 @@ export class AppModule implements NestModule, OnModuleInit {
   constructor(private readonly usersService: UsersService) {} // UsersService 의존성 주입
 
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('users');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 
   async onModuleInit() {

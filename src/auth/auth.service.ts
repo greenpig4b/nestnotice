@@ -1,12 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { UserDTO } from './dto/user.dto';
-import { User } from 'src/users/entity/users.entity';
+import { UserloginDTO } from './dto/userlogin.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
   constructor(private userService: UsersService) {}
 
+  // 회원가입
   async register(newUser: UserDTO): Promise<UserDTO> {
     let userEmailFind: UserDTO = await this.userService.findOneByEmail(
       newUser.email,
@@ -19,14 +26,23 @@ export class AuthService {
       );
     }
 
-    // DTO 유저로 변환
-    const user: User = new User();
-    user.email = newUser.email;
-    user.password = newUser.password;
-    user.name = newUser.name;
+    return await this.userService.create(newUser);
+  }
 
-    await this.userService.create(user);
+  // 로그인
+  async vaildateUser(userDTO: UserloginDTO): Promise<UserloginDTO | undefined> {
+    let userFind: UserloginDTO = await this.userService.findByFields({
+      where: { email: userDTO.email },
+    });
+    // bycript 비교
+    const validatePassword = await bcrypt.compare(
+      userDTO.password,
+      userFind.password,
+    );
+    if (!userFind || !validatePassword) {
+      throw new UnauthorizedException();
+    }
 
-    return newUser;
+    return userFind;
   }
 }
