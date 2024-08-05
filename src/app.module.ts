@@ -15,6 +15,7 @@ import { User } from './users/entity/users.entity';
 import { UsersService } from './users/users.service';
 import { UserAuthority } from './users/entity/user-authority.entity';
 import { NoticeModule } from './notice/notice.module';
+import { BoardModule } from './board/board.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NoticeModule } from './notice/notice.module';
     AuthModule,
     UsersModule,
     NoticeModule,
+    BoardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

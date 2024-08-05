@@ -52,7 +52,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload: Payload = { id: userFind.id, email: userFind.email };
+    const payload: Payload = {
+      id: userFind.id,
+      email: userFind.email,
+      authorities: userFind.authorities,
+    };
 
     return {
       accessToken: this.jwtService.sign(payload),
