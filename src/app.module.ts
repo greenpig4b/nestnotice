@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entity/users.entity';
 import { UsersService } from './users/users.service';
 import { UserAuthority } from './users/entity/user-authority.entity';
+import { NoticeModule } from './notice/notice.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserAuthority } from './users/entity/user-authority.entity';
     }),
     AuthModule,
     UsersModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
