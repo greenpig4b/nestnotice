@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UserDTO } from './dto/user.dto';
 import { UserloginDTO } from './dto/userlogin.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -41,5 +50,12 @@ export class AuthController {
     const jwt = await this.authService.vaildateUser(userDTO);
     res.setHeader('Authorization', 'Bearer' + jwt.accessToken);
     return res.json(jwt);
+  }
+
+  @Get('/authenticate')
+  @UseGuards(AuthGuard)
+  isAuthenticated(@Req() req: Request): any {
+    const user: any = req.user;
+    return user;
   }
 }

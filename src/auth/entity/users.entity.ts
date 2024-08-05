@@ -18,5 +18,5 @@ export class User {
   @OneToMany((type) => UserAuthority, (userAuthority) => userAuthority.user, {
     eager: true,
   })
-  authorities?: any[];
+  authorities?: UserAuthority[];
 }

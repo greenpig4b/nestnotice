@@ -27,17 +27,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  //모든 유저
+  // 모든 유저
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
-  //유저 찾기
+  // 유저 찾기
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOne({ where: { id } });
   }
 
-  // 이메일 중복체크
+  // 이메일 중복 체크
   async findOneByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ where: { email } });
   }
@@ -47,16 +47,19 @@ export class UsersService {
     // 이메일 중복 체크
     const existingUser = await this.findOneByEmail(userDTO.email);
     if (existingUser) {
-      throw new Error('이미 사용중인 이메일입니다.');
+      throw new Error('이미 사용 중인 이메일입니다.');
     }
 
     // 비밀번호 해싱
-    userDTO.password = await bcrypt.hash(userDTO.password, 10);
+    const hashedPassword = await bcrypt.hash(userDTO.password, 10);
+    const user = this.usersRepository.create({
+      ...userDTO,
+      password: hashedPassword,
+    });
 
     // 유저 저장
-    const saveedUser = await this.usersRepository.save(userDTO);
-
-    return saveedUser;
+    const savedUser = await this.usersRepository.save(user);
+    return savedUser;
   }
 
   // 탈퇴하기
