@@ -4,12 +4,15 @@ import * as bcrypt from 'bcryptjs';
 import { User } from './entity/users.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { UserDTO } from 'src/auth/dto/user.dto';
+import { UserAuthority } from './entity/user-authority.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(UserAuthority)
+    private userAuthorityRepository: Repository<UserAuthority>,
   ) {}
 
   // 더미 유저 생성
@@ -54,9 +57,15 @@ export class UsersService {
     userDTO.password = await bcrypt.hash(userDTO.password, 10);
 
     // 유저 저장
-    const saveedUser = await this.usersRepository.save(userDTO);
+    const savedUser = await this.usersRepository.save(userDTO);
 
-    return saveedUser;
+    const userAuthority = this.userAuthorityRepository.create({
+      userId: savedUser.id,
+      authorityName: 'USER',
+    });
+    await this.userAuthorityRepository.save(userAuthority);
+
+    return savedUser;
   }
 
   // 탈퇴하기

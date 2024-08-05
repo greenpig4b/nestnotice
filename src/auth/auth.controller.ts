@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Req,
   Res,
@@ -18,6 +20,9 @@ import { UserDTO } from './dto/user.dto';
 import { UserloginDTO } from './dto/userlogin.dto';
 import { Request, Response } from 'express';
 import { JWTAuthGuard } from './security/jwt.auth.guard';
+import { RolesGuard } from './security/role.guard';
+import { RoleType } from './security/enum/role-type';
+import { Roles } from './decorator/role.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -72,5 +77,29 @@ export class AuthController {
   isAuthenicated(@Req() req: Request): any {
     const user: any = req.user;
     return user;
+  }
+
+  @Get('/roles')
+  @UseGuards(JWTAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '사용자 역할 조회' })
+  @ApiResponse({
+    status: 200,
+    description: 'User roles retrieved successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'JWT token is missing',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  getUserRoles(@Req() req: Request): any {
+    const user: any = req.user;
+    if (!user) {
+      throw new HttpException('JWT token is missing', HttpStatus.BAD_REQUEST);
+    }
+    return user.authorities;
   }
 }

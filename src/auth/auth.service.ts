@@ -51,7 +51,7 @@ export class AuthService {
     if (!userFind || !validatePassword) {
       throw new UnauthorizedException();
     }
-
+    this.convertInAuthorities(userFind);
     const payload: Payload = {
       id: userFind.id,
       email: userFind.email,
@@ -64,8 +64,32 @@ export class AuthService {
   }
 
   async tokenValidateUser(payload: Payload): Promise<User | undefined> {
-    return await this.userService.findByFields({
+    const userFind = await this.userService.findByFields({
       where: { id: payload.id },
     });
+    this.flatAuthorities(userFind);
+    return userFind;
+  }
+
+  private flatAuthorities(user: any): User {
+    if (user && user.authorities) {
+      const authorities: string[] = [];
+      user.authorities.forEach((authority) =>
+        authorities.push(authority.authorityName),
+      );
+      user.authorities = authorities;
+    }
+    return user;
+  }
+
+  private convertInAuthorities(user: any): User {
+    if (user && user.authorities) {
+      const authorities: any[] = [];
+      user.authorities.forEach((authority) =>
+        authorities.push({ name: authority.authorityName }),
+      );
+      user.authorities = authorities;
+    }
+    return user;
   }
 }
