@@ -13,17 +13,21 @@ import { LoggerMiddleware } from './users/middleware/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entity/users.entity';
 import { UsersService } from './users/users.service';
+import { UserAuthority } from './users/entity/user-authority.entity';
+import { NoticeModule } from './notice/notice.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
-      entities: [User],
+      entities: [User, UserAuthority],
       synchronize: true, // 개발모드에서만 설정
+      logging: true,
     }),
     AuthModule,
     UsersModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
