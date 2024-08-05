@@ -13,7 +13,7 @@ export class AuthController {
   @ApiOperation({ summary: '회원가입' })
   @ApiResponse({
     status: 201,
-    description: '성공',
+    description: 'register Success',
   })
   @ApiResponse({
     status: 400,
@@ -27,7 +27,7 @@ export class AuthController {
   @ApiOperation({ summary: '로그인' })
   @ApiResponse({
     status: 201,
-    description: '성공',
+    description: 'login Success',
   })
   @ApiResponse({
     status: 400,
