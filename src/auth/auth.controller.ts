@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UserDTO } from './dto/user.dto';
 import { UserloginDTO } from './dto/userlogin.dto';
+import { Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,7 +34,12 @@ export class AuthController {
     status: 400,
     description: 'Bad Request',
   })
-  async login(@Body() userDTO: UserloginDTO): Promise<any> {
-    return await this.authService.vaildateUser(userDTO);
+  async login(
+    @Body() userDTO: UserloginDTO,
+    @Res() res: Response,
+  ): Promise<any> {
+    const jwt = await this.authService.vaildateUser(userDTO);
+    res.setHeader('Authorization', 'Bearer' + jwt.accessToken);
+    return res.json(jwt);
   }
 }

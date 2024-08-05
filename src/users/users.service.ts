@@ -67,7 +67,7 @@ export class UsersService {
   // 유저검색
   async findByFields(
     options: FindOneOptions<UserDTO>,
-  ): Promise<UserDTO | undefined> {
+  ): Promise<User | undefined> {
     return await this.usersRepository.findOne(options);
   }
 }
