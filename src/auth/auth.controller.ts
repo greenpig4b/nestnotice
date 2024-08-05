@@ -1,9 +1,23 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UserDTO } from './dto/user.dto';
 import { UserloginDTO } from './dto/userlogin.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { JWTAuthGuard } from './security/jwt.auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -41,5 +55,22 @@ export class AuthController {
     const jwt = await this.authService.vaildateUser(userDTO);
     res.setHeader('Authorization', 'Bearer' + jwt.accessToken);
     return res.json(jwt);
+  }
+
+  @Get('/authenticate')
+  @UseGuards(JWTAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '인증 확인' })
+  @ApiResponse({
+    status: 200,
+    description: 'Authenticated',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  isAuthenicated(@Req() req: Request): any {
+    const user: any = req.user;
+    return user;
   }
 }
