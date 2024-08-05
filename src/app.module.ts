@@ -9,18 +9,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { LoggerMiddleware } from './users/middleware/logger.middleware';
+import { LoggerMiddleware } from './auth/middleware/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entity/users.entity';
-import { UsersService } from './users/users.service';
+import { User } from './auth/entity/users.entity';
+import { UsersService } from './auth/users.service';
+import { UserAuthority } from './auth/entity/user-authority.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
-      entities: [User],
-      synchronize: true, // 개발모드에서만 설정
+      entities: [User, UserAuthority],
+      synchronize: false, // 개발모드에서만 설정
+      logging: true,
     }),
     AuthModule,
     UsersModule,

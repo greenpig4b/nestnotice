@@ -4,12 +4,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/auth/users.service';
 import { UserDTO } from './dto/user.dto';
 import { UserloginDTO } from './dto/userlogin.dto';
 import * as bcrypt from 'bcryptjs';
 import { Payload } from './security/payload.interface';
-import { User } from 'src/users/entity/users.entity';
+import { User } from 'src/auth/entity/users.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -57,5 +57,12 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  //토큰 검증
+  async tokenValidateUser(payload: Payload): Promise<User | undefined> {
+    return await this.userService.findByFields({
+      where: { id: payload.id },
+    });
   }
 }
