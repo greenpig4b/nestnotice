@@ -46,7 +46,7 @@ export class AppModule implements NestModule, OnModuleInit {
       { email: 'love@nate.com', password: '1234', name: '장유진' },
     ];
     const dummyNotice = [];
-
+    //
     for (const user of dummyUsers) {
       await this.usersService.createUser(user.email, user.password, user.name);
     }
